@@ -8,6 +8,9 @@ This script is used to update Multiple dynamic DNS entries for accounts on Cloud
 git clone https://github.com/TNTWZRD/cloudflare-ddns-updater
 ```
 
+Either copy or rename secret-template.json, and zonelist-template.json
+and following the given templates insde the files fill in the DNSAPI-TOKEN, and add your Zone id's and domain names that you would like checked.
+
 ## Usage
 This script is used with crontab. Specify the frequency of execution through crontab.
 
