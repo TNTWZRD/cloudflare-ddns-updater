@@ -26,13 +26,17 @@ for ZoneIdentifier in ZoneList:
     for RecordName in ZoneList[ZoneIdentifier]:
         print("Checking " + ZoneIdentifier + " : " + RecordName)
         record = requests.get("https://api.cloudflare.com/client/v4/zones/"+ZoneIdentifier+"/dns_records?name="+RecordName, headers=headers).json()
-        if(record["result_info"]["count"] == 0):
+        if "error" not in record:
+            if(record["result_info"]["count"] == 0):
+                print(ZoneIdentifier + " : " + RecordName + " || Invalid Record, Check spelling or create record")
+                break
+            for result in record["result"]:
+                if(result["type"] != "A"): break
+                if(result["content"] != IP):
+                    toUpdate.append({"ZoneID": result["zone_id"], "RecordID": result["id"], "Proxy": result["proxied"], "RecordName": result["name"]})
+        else:
             print(ZoneIdentifier + " : " + RecordName + " || Invalid Record, Check spelling or create record")
-            break
-        for result in record["result"]:
-            if(result["type"] != "A"): break
-            if(result["content"] != IP):
-                toUpdate.append({"ZoneID": result["zone_id"], "RecordID": result["id"], "Proxy": result["proxied"], "RecordName": result["name"]})
+            print(record)
 
 ## Exit if all records are current
 if(len(toUpdate) == 0): sys.exit("All records current, No updating required!")
